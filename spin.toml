@@ -1,0 +1,33 @@
+spin_manifest_version = 2
+
+[application]
+authors = ["Nir Mashkowski <nimashkowski@microsoft.com>"]
+description = ""
+name = "python-app"
+version = "0.1.0"
+
+[[trigger.http]]
+route = "/app"
+component = "app"
+
+[[trigger.http]]
+route = { private = true }
+component = "comp1"
+
+
+[component.comp1]
+source = "comp1.wasm"
+
+[component.comp1.build]
+command = "componentize-py -w spin-http componentize component1 -o comp1.wasm"
+watch = ["component1.py", "requirements.txt"]
+
+[component.app]
+source = "app.wasm"
+allowed_outbound_hosts = [
+    "http://comp1.spin.internal:80"
+]
+
+[component.app.build]
+command = "componentize-py -w spin-http componentize app -o app.wasm"
+watch = ["app.py", "requirements.txt"]
